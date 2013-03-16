@@ -1,5 +1,5 @@
 ﻿/*
-  Copyright (C) 2012 Jeroen Frijters
+  Copyright (C) 2012-2013 Jeroen Frijters
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -36,7 +36,7 @@ namespace Ildasm
             string outputFile = null;
             string inputFile = null;
             var compatLevel = CompatLevel.None;
-            var diffMode = false;
+            var flags = Flags.None;
             foreach (var arg in args)
             {
                 if (arg.StartsWith("-", StringComparison.Ordinal) || arg.StartsWith("/", StringComparison.Ordinal))
@@ -66,7 +66,11 @@ namespace Ildasm
                     }
                     else if (String.Compare(arg, 1, "diffmode", 0, 8, StringComparison.OrdinalIgnoreCase) == 0)
                     {
-                        diffMode = true;
+                        flags |= Flags.DiffMode;
+                    }
+                    else if (IsIldasmOption(arg, "caverbal"))
+                    {
+                        flags |= Flags.Caverbal;
                     }
                     else
                     {
@@ -92,7 +96,7 @@ namespace Ildasm
                 PrintUsage();
                 return;
             }
-            var disassembler = new Disassembler(inputFile, outputFile, compatLevel, diffMode);
+            var disassembler = new Disassembler(inputFile, outputFile, compatLevel, flags);
             if (outputFile != null)
             {
                 Encoding enc;
@@ -133,6 +137,12 @@ namespace Ildasm
             return false;
         }
 
+        static bool IsIldasmOption(string arg, string option)
+        {
+            // we match ildasm options on the first three letters (like ildasm)
+            return String.Compare(arg, 1, option, 0, 3, StringComparison.OrdinalIgnoreCase) == 0;
+        }
+
         static void PrintUsage()
         {
             Console.WriteLine("IKDASM - IL disassembler example for IKVM.Reflection");
@@ -144,6 +154,7 @@ namespace Ildasm
             Console.WriteLine("  /OUT=<file name>    Direct output to file rather than to stdout.");
             Console.WriteLine("  /COMPAT=<version>   Match ildasm behavior. (<version> = 2.0 | 4.0 | 4.5)");
             Console.WriteLine("  /DIFFMODE           Remove superficial differences to allow assembly comparisons");
+            Console.WriteLine("  /CAVERBAL           Try to decode custom attribute blobs");
         }
     }
 }

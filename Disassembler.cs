@@ -38,6 +38,14 @@ namespace Ildasm
         V45,
     }
 
+    [Flags]
+    enum Flags
+    {
+        None = 0,
+        DiffMode = 1,
+        Caverbal = 2,
+    }
+
     sealed partial class Disassembler
     {
         const int IMAGE_SCN_CNT_CODE = 0x00000020;
@@ -84,12 +92,14 @@ namespace Ildasm
         readonly CompatLevel compat;
         readonly string outputFile;
         readonly bool diffMode;
+        readonly Flags flags;
 
-        internal Disassembler(string inputFile, string outputFile, CompatLevel compat, bool diffMode)
+        internal Disassembler(string inputFile, string outputFile, CompatLevel compat, Flags flags)
         {
             this.outputFile = outputFile;
             this.compat = compat;
-            this.diffMode = diffMode;
+            this.diffMode = (flags & Flags.DiffMode) != 0;
+            this.flags = flags;
             universe.AssemblyResolve += new IKVM.Reflection.ResolveEventHandler(universe_AssemblyResolve);
             mscorlib = universe.Import(typeof(object)).Assembly;
             typeofSystemBoolean = universe.Import(typeof(bool));
@@ -2591,8 +2601,8 @@ namespace Ildasm
             else
             {
                 var wrap = lw.Column >= 80;
-                var sb = new StringBuilder();
-                if (DecodeCABlob(sb, ca.Constructor, blob, wrap ? (level0 + 4) * (comment ? -1 : 1) : lw.Column + 5))
+                StringBuilder sb;
+                if ((flags & Flags.Caverbal) != 0 && DecodeCABlob(sb = new StringBuilder(), ca.Constructor, blob, wrap ? (level0 + 4) * (comment ? -1 : 1) : lw.Column + 5))
                 {
                     lw.Write(")");
                     if (wrap)
