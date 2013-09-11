@@ -2029,9 +2029,37 @@ namespace Ildasm
             for (int i = 0; i < referencedAssemblies.Length; i++)
             {
                 AssemblyName asm = referencedAssemblies[i];
-                lw.Write(".assembly extern {0}{1}",
-                    asm.ContentType == AssemblyContentType.WindowsRuntime && (compat == CompatLevel.None || compat >= CompatLevel.V45) ? "windowsruntime " : "",
-                    QuoteIdentifier(asm.Name));
+                lw.Write(".assembly extern ");
+                if ((asm.Flags & AssemblyNameFlags.Retargetable) != 0)
+                {
+                    lw.Write("retargetable ");
+                }
+                if (asm.ContentType == AssemblyContentType.WindowsRuntime && (compat == CompatLevel.None || compat >= CompatLevel.V45))
+                {
+                    lw.Write("windowsruntime ");
+                }
+                switch (asm.ProcessorArchitecture)
+                {
+                    case ProcessorArchitecture.MSIL:
+                        lw.Write("cil ");
+                        break;
+                    case ProcessorArchitecture.X86:
+                        lw.Write("x86 ");
+                        break;
+                    case ProcessorArchitecture.IA64:
+                        lw.Write("ia64 ");
+                        break;
+                    case ProcessorArchitecture.Amd64:
+                        lw.Write("amd64 ");
+                        break;
+                    case ProcessorArchitecture.Arm:
+                        if (compat == CompatLevel.None)
+                        {
+                            lw.Write("/*arm*/ ");
+                        }
+                        break;
+                }
+                lw.Write(QuoteIdentifier(asm.Name));
                 if (asm.Name != this.referencedAssemblies[resolvedAssemblies[i]])
                 {
                     lw.Write(" as {0}", QuoteIdentifier(this.referencedAssemblies[resolvedAssemblies[i]]));
