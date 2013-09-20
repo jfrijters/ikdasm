@@ -807,14 +807,7 @@ namespace Ildasm
             if (type.BaseType != null)
             {
                 lw.Write("       extends ");
-                if (type.BaseType.__IsMissing || !type.BaseType.IsGenericType)
-                {
-                    WriteTypeDefOrRef(lw, type.BaseType);
-                }
-                else
-                {
-                    WriteSignatureType(lw, type.BaseType, TypeLocation.General);
-                }
+                WriteInterfaceOrBaseType(lw, type.BaseType);
                 lw.WriteLine();
                 lw.GoToColumn(level);
             }
@@ -831,14 +824,7 @@ namespace Ildasm
                         lw.GoToColumn(level + 18);
                     }
                     first = false;
-                    if (iface.__IsMissing || !iface.IsGenericType)
-                    {
-                        WriteTypeDefOrRef(lw, iface);
-                    }
-                    else
-                    {
-                        WriteSignatureType(lw, iface, TypeLocation.General);
-                    }
+                    WriteInterfaceOrBaseType(lw, iface);
                 }
                 lw.WriteLine();
                 lw.GoToColumn(level);
@@ -865,7 +851,7 @@ namespace Ildasm
                     {
                         lw.GoToColumn(level + 2);
                         lw.Write(".interfaceimpl type ");
-                        WriteTypeDefOrRef(lw, iface);
+                        WriteInterfaceOrBaseType(lw, iface);
                         lw.WriteLine();
                         WriteCustomAttributes(lw, level + 2, cas);
                     }
@@ -906,6 +892,18 @@ namespace Ildasm
             WriteTypeNameNoOuter(lw, type);
             lw.WriteLine();
             lw.WriteLine();
+        }
+
+        void WriteInterfaceOrBaseType(LineWriter lw, Type type)
+        {
+            if (type.__IsMissing || !type.IsGenericType)
+            {
+                WriteTypeDefOrRef(lw, type);
+            }
+            else
+            {
+                WriteSignatureType(lw, type, TypeLocation.General);
+            }
         }
 
         void WriteGenericParameterCustomAttributes(LineWriter lw, int level, Type[] args)
