@@ -44,6 +44,7 @@ namespace Ildasm
         None = 0,
         DiffMode = 1,
         Caverbal = 2,
+        Project = 4,
     }
 
     sealed partial class Disassembler
@@ -59,7 +60,7 @@ namespace Ildasm
         const int COMIMAGE_FLAGS_STRONGNAMESIGNED = 0x00000008;
         const int COMIMAGE_FLAGS_NATIVE_ENTRYPOINT = 0x00000010;
         const int COMIMAGE_FLAGS_32BITPREFERRED = 0x00020000;
-        readonly Universe universe = new Universe(UniverseOptions.EnableFunctionPointers | UniverseOptions.ResolveMissingMembers | UniverseOptions.DisablePseudoCustomAttributeRetrieval);
+        readonly Universe universe;
         readonly Assembly mscorlib;
         readonly Type typeofSystemBoolean;
         readonly Type typeofSystemSByte;
@@ -100,6 +101,12 @@ namespace Ildasm
             this.compat = compat;
             this.diffMode = (flags & Flags.DiffMode) != 0;
             this.flags = flags;
+            UniverseOptions options = UniverseOptions.EnableFunctionPointers | UniverseOptions.ResolveMissingMembers | UniverseOptions.DisablePseudoCustomAttributeRetrieval;
+            if ((flags & Flags.Project) == 0)
+            {
+                options |= UniverseOptions.DisableWindowsRuntimeProjection;
+            }
+            universe = new Universe(options);
             universe.AssemblyResolve += new IKVM.Reflection.ResolveEventHandler(universe_AssemblyResolve);
             mscorlib = universe.Import(typeof(object)).Assembly;
             typeofSystemBoolean = universe.Import(typeof(bool));

@@ -72,6 +72,10 @@ namespace Ildasm
                     {
                         flags |= Flags.Caverbal;
                     }
+                    else if (IsIldasmOption(arg, "project"))
+                    {
+                        flags |= Flags.Project;
+                    }
                     else
                     {
                         PrintUsage();
@@ -155,6 +159,7 @@ namespace Ildasm
             Console.WriteLine("  /COMPAT=<version>   Match ildasm behavior. (<version> = 2.0 | 4.0 | 4.5)");
             Console.WriteLine("  /DIFFMODE           Remove superficial differences to allow assembly comparisons");
             Console.WriteLine("  /CAVERBAL           Try to decode custom attribute blobs");
+            Console.WriteLine("  /PROJECT            Project WinMD metadata into .NET format");
         }
     }
 }
