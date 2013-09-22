@@ -2103,8 +2103,7 @@ namespace Ildasm
             }
             foreach (var ca in cas)
             {
-                if (ca.Constructor.DeclaringType.FullName == "System.Diagnostics.DebuggableAttribute"
-                    && ca.Constructor.DeclaringType.Assembly.GetName().Name == "mscorlib")
+                if (compat != CompatLevel.None && IsDebuggableAttribute(ca.AttributeType))
                 {
                     lw.WriteLine();
                     lw.WriteLine("  // --- The following custom attribute is added automatically, do not uncomment -------");
@@ -2148,6 +2147,16 @@ namespace Ildasm
                 }
             }
             lw.WriteLine("}");
+        }
+
+        static bool IsDebuggableAttribute(Type type)
+        {
+            return !type.IsNested
+                && (type.__IsMissing || !type.IsGenericType)
+                && !type.HasElementType
+                && !type.__IsFunctionPointer
+                && type.__Name == "DebuggableAttribute"
+                && type.__Namespace == "System.Diagnostics";
         }
 
         void WriteDeclarativeSecurity(LineWriter lw, int level, IList<CustomAttributeData> list, int metadataToken)
