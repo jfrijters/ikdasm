@@ -695,7 +695,7 @@ namespace Ildasm
             else if (compat == CompatLevel.V45)
             {
                 lw.WriteLine();
-                lw.WriteLine("//  Microsoft (R) .NET Framework IL Disassembler.  Version 4.0.30319.17929");
+                lw.WriteLine("//  Microsoft (R) .NET Framework IL Disassembler.  Version 4.0.30319.18020");
                 lw.WriteLine("//  Copyright (c) Microsoft Corporation.  All rights reserved.");
                 lw.WriteLine();
                 lw.WriteLine();
@@ -1065,6 +1065,7 @@ namespace Ildasm
             }
             WriteCallingConvention(lw, prop.__CallingConvention);
             WriteSignatureType(lw, prop.PropertyType);
+            WriteCustomModifiers(lw, prop.__GetCustomModifiers());
             if (lw.Column > 40)
             {
                 lw.WriteLine();
