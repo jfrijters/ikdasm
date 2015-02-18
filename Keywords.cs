@@ -176,6 +176,7 @@ namespace Ildasm
                 "opt",
                 "or",
                 "out",
+                "permitonly",
                 "pinned",
                 "pop",
                 "prefix1",
