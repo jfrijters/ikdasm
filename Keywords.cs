@@ -191,6 +191,7 @@ namespace Ildasm
                 "request",
                 "runtime",
                 "sealed",
+                "sequential",
                 "serializable",
                 "sizeof",
                 "shl",
