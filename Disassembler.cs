@@ -512,7 +512,7 @@ namespace Ildasm
             {
                 typeSize = GetPointerSize();
             }
-            else if (!type.__GetLayout(out packingSize, out typeSize))
+            else if (type.__IsMissing || !type.__GetLayout(out packingSize, out typeSize))
             {
                 if (type == typeofSystemSByte
                     || type == typeofSystemByte
@@ -537,6 +537,11 @@ namespace Ildasm
                     || type == typeofSystemDouble)
                 {
                     typeSize = 8;
+                }
+                else
+                {
+                    // unknown
+                    typeSize = 0;
                 }
             }
             return typeSize;
