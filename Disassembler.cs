@@ -2168,8 +2168,12 @@ namespace Ildasm
                 && type.__Namespace == "System.Diagnostics";
         }
 
-        void WriteDeclarativeSecurity(LineWriter lw, int level, IList<CustomAttributeData> list, int metadataToken)
+        void WriteDeclarativeSecurity(LineWriter lw, int level, IEnumerable<CustomAttributeData> list, int metadataToken)
         {
+            if (diffMode)
+            {
+                list = list.OrderBy(cad => cad.ConstructorArguments[0].Value);
+            }
             var action = (System.Security.Permissions.SecurityAction)(- 1);
             var curr = new List<CustomAttributeData>();
             foreach (var sec in list)
