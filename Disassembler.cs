@@ -2024,7 +2024,14 @@ namespace Ildasm
             foreach (var mod in mods.Reverse())
             {
                 lw.Write(" {0}(", mod.IsRequired ? "modreq" : "modopt");
-                WriteTypeDefOrRef(lw, mod.Type);
+                if (mod.Type.__IsBuiltIn)
+                {
+                    WriteSignatureType(lw, mod.Type);
+                }
+                else
+                {
+                    WriteTypeDefOrRef(lw, mod.Type);
+                }
                 lw.Write(")");
             }
         }
