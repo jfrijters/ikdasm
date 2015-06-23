@@ -967,18 +967,26 @@ namespace Ildasm
                     lw.Write(".ctor ");
                 }
                 string sep2 = "(";
-                foreach (var constraint in par.GetGenericParameterConstraints())
+                Type[] constraints = par.GetGenericParameterConstraints();
+                CustomModifiers[] customModifiers = par.__GetGenericParameterConstraintCustomModifiers();
+                for (int j = 0; j < constraints.Length; j++)
                 {
+                    Type constraint = constraints[j];
                     lw.Write(sep2);
                     sep2 = ", ";
                     if (constraint.__IsMissing || !constraint.IsGenericType)
                     {
+                        if (!customModifiers[j].IsEmpty && !constraint.IsGenericParameter)
+                        {
+                            lw.Write(constraint.IsValueType ? "valuetype " : "class ");
+                        }
                         WriteTypeDefOrRef(lw, constraint);
                     }
                     else
                     {
                         WriteSignatureType(lw, constraint);
                     }
+                    WriteCustomModifiers(lw, customModifiers[j]);
                 }
                 if (sep2 != "(")
                 {
