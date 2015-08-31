@@ -2643,7 +2643,10 @@ namespace Ildasm
 
         void WriteCustomAttributeImpl(LineWriter lw, CustomAttributeData ca, bool comment, int level0)
         {
-            lw.Write("instance void ");
+            lw.Write("instance ");
+            WriteSignatureType(lw, ca.Constructor.__ReturnParameter.ParameterType);
+            WriteCustomModifiers(lw, ca.Constructor.__ReturnParameter.__GetCustomModifiers());
+            lw.Write(" ");
             WriteTypeDefOrRef(lw, ca.Constructor.DeclaringType);
             lw.Write("::.ctor(");
             int level = lw.Column;
