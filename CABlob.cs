@@ -25,9 +25,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using IKVM.Reflection;
 using IKVM.Reflection.Reader;
-using Type = IKVM.Reflection.Type;
+using Managed.Reflection;
+using Type = Managed.Reflection.Type;
 
 namespace Ildasm
 {
@@ -65,7 +65,7 @@ namespace Ildasm
                 sb.Append('}');
                 return true;
             }
-            catch (IKVM.Reflection.BadImageFormatException)
+            catch (Managed.Reflection.BadImageFormatException)
             {
                 return false;
             }
@@ -106,7 +106,7 @@ namespace Ildasm
             {
                 if (securityCompatHack)
                 {
-                    throw new IKVM.Reflection.BadImageFormatException();
+                    throw new Managed.Reflection.BadImageFormatException();
                 }
                 sb.Append("class ").Append(QuoteIdentifier(typeName, true));
             }
@@ -128,7 +128,7 @@ namespace Ildasm
                 ReadNamedArguments(sb, br, named, level, false);
                 return true;
             }
-            catch (IKVM.Reflection.BadImageFormatException) { }
+            catch (Managed.Reflection.BadImageFormatException) { }
             catch (ArgumentOutOfRangeException) { }
             return false;
         }
@@ -179,7 +179,7 @@ namespace Ildasm
                         sb.Append("property ");
                         break;
                     default:
-                        throw new IKVM.Reflection.BadImageFormatException();
+                        throw new Managed.Reflection.BadImageFormatException();
                 }
                 string typeName;
                 Type fieldOrPropertyType = ReadFieldOrPropType(sb, br, out typeName);
@@ -200,7 +200,7 @@ namespace Ildasm
                 }
                 else if (length == 0 && compat != CompatLevel.None)
                 {
-                    throw new IKVM.Reflection.BadImageFormatException();
+                    throw new Managed.Reflection.BadImageFormatException();
                 }
                 else
                 {
@@ -413,7 +413,7 @@ namespace Ildasm
                         sb.AppendFormat("int64({0})", br.ReadInt64());
                         break;
                     default:
-                        throw new IKVM.Reflection.BadImageFormatException();
+                        throw new Managed.Reflection.BadImageFormatException();
                 }
             }
             else if (type.IsEnum)
@@ -569,7 +569,7 @@ namespace Ildasm
                 case 0x51:
                     return typeofSystemObject;
                 default:
-                    throw new IKVM.Reflection.BadImageFormatException();
+                    throw new Managed.Reflection.BadImageFormatException();
             }
         }
 

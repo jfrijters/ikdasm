@@ -23,11 +23,10 @@
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using IKVM.Reflection;
-using IKVM.Reflection.Emit;
-using Type = IKVM.Reflection.Type;
+using Managed.Reflection;
+using Managed.Reflection.Emit;
+using Type = Managed.Reflection.Type;
 using System.Diagnostics;
 
 namespace Ildasm
@@ -160,7 +159,7 @@ namespace Ildasm
                                 handler = true;
                                 break;
                             default:
-                                throw new IKVM.Reflection.BadImageFormatException();
+                                throw new Managed.Reflection.BadImageFormatException();
                         }
                     }
                     else if (currentException.FilterOffset == pos && pos != 0)
@@ -721,7 +720,7 @@ namespace Ildasm
             else
             {
                 WriteSignatureType(lw, ((MethodInfo)mb.__GetMethodOnTypeDefinition()).ReturnType, IsArrayOfGenericParameter(mb.DeclaringType) ? TypeLocation.General : TypeLocation.MemberRefNoWrap);
-                WriteCustomModifiers(lw, ((MethodInfo)mb).ReturnParameter.__GetCustomModifiers());
+                WriteCustomModifiers(lw, ((MethodInfo)mb.__GetMethodOnTypeDefinition()).ReturnParameter.__GetCustomModifiers());
                 lw.Write(" ");
             }
             bool generic;
@@ -759,6 +758,7 @@ namespace Ildasm
                         lw.Write(sep);
                         sep = ",";
                         WriteSignatureType(lw, par, generic ? TypeLocation.MemberRefNoWrap : TypeLocation.MethodGenericParameter);
+                        // TODO write custom modifiers
                     }
                     lw.Write(">");
                 }

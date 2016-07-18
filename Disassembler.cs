@@ -25,8 +25,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using IKVM.Reflection;
-using Type = IKVM.Reflection.Type;
+using Managed.Reflection;
+using Type = Managed.Reflection.Type;
 
 namespace Ildasm
 {
@@ -107,7 +107,7 @@ namespace Ildasm
                 options |= UniverseOptions.DisableWindowsRuntimeProjection;
             }
             universe = new Universe(options);
-            universe.AssemblyResolve += new IKVM.Reflection.ResolveEventHandler(universe_AssemblyResolve);
+            universe.AssemblyResolve += universe_AssemblyResolve;
             mscorlib = universe.Import(typeof(object)).Assembly;
             typeofSystemBoolean = universe.Import(typeof(bool));
             typeofSystemSByte = universe.Import(typeof(sbyte));
@@ -138,7 +138,7 @@ namespace Ildasm
             }
             else
             {
-                var ab = universe.DefineDynamicAssembly(new AssemblyName("<ModuleContainer>"), IKVM.Reflection.Emit.AssemblyBuilderAccess.ReflectionOnly);
+                var ab = universe.DefineDynamicAssembly(new AssemblyName("<ModuleContainer>"), Managed.Reflection.Emit.AssemblyBuilderAccess.ReflectionOnly);
                 assembly = ab;
                 module = ab.__AddModule(raw);
             }
@@ -164,7 +164,7 @@ namespace Ildasm
             fieldNames = GetFieldNames();
         }
 
-        Assembly universe_AssemblyResolve(object sender, IKVM.Reflection.ResolveEventArgs args)
+        Assembly universe_AssemblyResolve(object sender, Managed.Reflection.ResolveEventArgs args)
         {
             if (resolvedAssemblies != null)
             {
@@ -185,17 +185,17 @@ namespace Ildasm
             LineWriter lw = new LineWriter(writer);
             WriteCopyrightHeader(lw);
             WriteVTableFixupComment(lw);
-            if (!(assembly is IKVM.Reflection.Emit.AssemblyBuilder))
+            if (!(assembly is Managed.Reflection.Emit.AssemblyBuilder))
             {
                 WriteMscorlibDirective(lw);
             }
             WriteModuleManifest(lw);
-            if (!(assembly is IKVM.Reflection.Emit.AssemblyBuilder))
+            if (!(assembly is Managed.Reflection.Emit.AssemblyBuilder))
             {
                 WriteAssemblyManifest(lw);
             }
             WriteExportedTypes(lw);
-            if (!(assembly is IKVM.Reflection.Emit.AssemblyBuilder))
+            if (!(assembly is Managed.Reflection.Emit.AssemblyBuilder))
             {
                 WriteModules(lw);
                 WriteResources(lw);
@@ -723,7 +723,7 @@ namespace Ildasm
             }
         }
 
-        void WriteType(LineWriter lw, IKVM.Reflection.Type type)
+        void WriteType(LineWriter lw, Managed.Reflection.Type type)
         {
             int level = lw.Column;
             lw.Write(".class ");
@@ -2032,7 +2032,7 @@ namespace Ildasm
             foreach (var mod in mods.Reverse())
             {
                 lw.Write(" {0}(", mod.IsRequired ? "modreq" : "modopt");
-                if (mod.Type.__IsBuiltIn)
+                if (mod.Type.__IsBuiltIn || mod.Type.IsConstructedGenericType)
                 {
                     WriteSignatureType(lw, mod.Type);
                 }
@@ -2219,13 +2219,19 @@ namespace Ildasm
                     case System.Security.Permissions.SecurityAction.Assert:
                         lw.Write("assert");
                         break;
+#pragma warning disable 618
                     case System.Security.Permissions.SecurityAction.RequestMinimum:
+#pragma warning restore 618
                         lw.Write("reqmin");
                         break;
+#pragma warning disable 618
                     case System.Security.Permissions.SecurityAction.RequestRefuse:
+#pragma warning restore 618
                         lw.Write("reqrefuse");
                         break;
+#pragma warning disable 618
                     case System.Security.Permissions.SecurityAction.RequestOptional:
+#pragma warning restore 618
                         lw.Write("reqopt");
                         break;
                     case System.Security.Permissions.SecurityAction.Demand:
@@ -2262,7 +2268,7 @@ namespace Ildasm
                             return;
                         }
                     }
-                    catch (IKVM.Reflection.MissingMemberException) { }
+                    catch (Managed.Reflection.MissingMemberException) { }
                 }
                 if (DecodeDeclSecurity(sb, list, level))
                 {
@@ -2996,6 +3002,10 @@ namespace Ildasm
             else if (type.IsArray)
             {
                 WriteSignatureType(lw, type, TypeLocation.General);
+            }
+            else if (type.__IsCyclicTypeSpec)
+            {
+                lw.Write("ERROR: {0}", type.__Name);
             }
             else
             {
