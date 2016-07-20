@@ -2216,8 +2216,23 @@ namespace Ildasm
                 lw.Write(".permissionset ");
                 switch (action)
                 {
+                    case 0:
+                        break;
+                    case (System.Security.Permissions.SecurityAction)1:
+                        lw.Write("request");
+                        break;
                     case System.Security.Permissions.SecurityAction.Assert:
                         lw.Write("assert");
+                        break;
+#pragma warning disable 618
+                    case System.Security.Permissions.SecurityAction.Deny:
+#pragma warning restore 618
+                        lw.Write("deny");
+                        break;
+#pragma warning disable 618
+                    case System.Security.Permissions.SecurityAction.PermitOnly:
+#pragma warning restore 618
+                        lw.Write("permitonly");
                         break;
 #pragma warning disable 618
                     case System.Security.Permissions.SecurityAction.RequestMinimum:
@@ -2242,6 +2257,24 @@ namespace Ildasm
                         break;
                     case System.Security.Permissions.SecurityAction.InheritanceDemand:
                         lw.Write("inheritcheck");
+                        break;
+                    case (System.Security.Permissions.SecurityAction)11:
+                        lw.Write("prejitgrant");
+                        break;
+                    case (System.Security.Permissions.SecurityAction)12:
+                        lw.Write("prejitdeny");
+                        break;
+                    case (System.Security.Permissions.SecurityAction)13:
+                        lw.Write("noncasdemand");
+                        break;
+                    case (System.Security.Permissions.SecurityAction)14:
+                        lw.Write("noncaslinkdemand");
+                        break;
+                    case (System.Security.Permissions.SecurityAction)15:
+                        lw.Write("noncasinheritance");
+                        break;
+                    default:
+                        lw.Write("<UNKNOWN_ACTION>");
                         break;
                 }
                 lw.WriteLine();
