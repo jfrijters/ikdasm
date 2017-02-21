@@ -1817,7 +1817,7 @@ namespace Ildasm
                     str = str.Substring(0, pos + 4) + "________" + str.Substring(pos + 12);
                 }
             }
-            quote |= str.Length > 0 && "0123456789".IndexOf(str[0]) != -1;
+            quote |= str.Length == 0 || "0123456789".IndexOf(str[0]) != -1;
             for (int i = str.IndexOf('.'); i != -1 && i < str.Length - 1; i = str.IndexOf('.', i + 1))
             {
                 if ("0123456789".IndexOf(str[i + 1]) != -1)
